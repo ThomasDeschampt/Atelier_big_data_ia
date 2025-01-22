@@ -64,7 +64,9 @@ def verifier_symptomes(symptomes):
                       'prominent_veins_on_calf','palpitations','painful_walking','pus_filled_pimples','blackheads','scurring','skin_peeling',
                       'silver_like_dusting','small_dents_in_nails','inflammatory_nails','blister','red_sore_around_nose','yellow_crust_ooze',
                       'prognosis']
-        
+    
+    #on enlève les espaces et on met tout en minuscule
+    symptomes = [symptome.strip().lower() for symptome in symptomes]
     for symptome in symptomes:
         if symptome not in list_symptomes:
             afficher_parler(f"Symptôme inconnu : {symptome}. Veuillez entrer un symptôme valide.")

@@ -3,6 +3,8 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.model_selection import train_test_split, cross_val_score
 from sklearn import preprocessing
 import joblib
+from sklearn import tree
+import matplotlib.pyplot as plt
 
 #Lecture du fichier csv
 def charger_donnees(fichier):
@@ -53,6 +55,16 @@ def main():
 
     fichier_modele = 'Models/modele_ml.joblib'
     sauvegarder_modele(clf, le, cols, fichier_modele)
+
+    #afficher le modele sous forme de graphe
+
+    fig = plt.figure(figsize=(250,200))
+    _ = tree.plot_tree(clf, 
+                   feature_names=cols,  
+                   class_names=le.classes_,
+                   filled=True)
+    plt.savefig('Models/modele_ml.png')
+
 
 if __name__ == "__main__":
     main()
