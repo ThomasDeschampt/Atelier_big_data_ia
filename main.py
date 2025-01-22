@@ -123,7 +123,9 @@ def main_gui():
         # Préparation des données pour clf2
         cols_clf2 = modele2['colonnes']  # Colonnes attendues par le modèle clf2
         le2 = modele2['encoder']
-        input_data_clf2 = [1 if col in [maladie_predite.lower()] else 0 for col in cols_clf2]
+        input_data_clf2 = [1 if col in [maladie_predite] else 0 for col in cols_clf2]
+        print(maladie_predite.lower())
+        print(input_data_clf2)
         input_data_clf2 = pd.DataFrame([input_data_clf2], columns=cols_clf2)
 
 
