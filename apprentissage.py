@@ -24,14 +24,14 @@ def preparer_donnees(data):
 
 #Entrainement du modèle
 #On divise les données en données d'entrainement et de test
-#On utilise un arbre de décision pour entrainer le modèle
-#On utilise la validation croisée pour évaluer le modèle
 def entrainer_modele(X, y):
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33, random_state=42)
 
+    # On utilise un arbre de décision
     clf = DecisionTreeClassifier(random_state=42)
     clf.fit(X_train, y_train)
 
+    # On évalue le modèle
     scores = cross_val_score(clf, X_test, y_test, cv=3)
     print(f"Précision moyenne de l'arbre de décision : {scores.mean():.2f}")
 
