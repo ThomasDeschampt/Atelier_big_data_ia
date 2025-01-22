@@ -1,6 +1,6 @@
 import pandas as pd
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.model_selection import train_test_split, cross_val_score
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.model_selection import train_test_split
 from sklearn import preprocessing
 import joblib
 
@@ -23,10 +23,10 @@ def preparer_donnees(data):
 
 # Entraînement du modèle
 def entrainer_modele(X, y):
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33, random_state=42)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.5, random_state=42)
 
     # Utilisation d'un Random Forest pour des prédictions probabilistes
-    clf = RandomForestClassifier(random_state=42, n_estimators=100, max_depth=40)
+    clf = DecisionTreeClassifier(random_state=42, max_depth=100)
     clf.fit(X_train, y_train)
 
     return clf
