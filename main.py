@@ -39,14 +39,12 @@ def verifier_modele():
     else:
         print(f"Le modèle '{fichier_modele}' est disponible.")
 
-# Afficher les descritpions des symptômes
-def afficher_description(symptomes, desc_dict):
-    print("\nDescriptions des symptômes :")
-
-    # On affiche la description de chaque symptôme
-    for symptome in symptomes:
-        description = desc_dict.get(symptome.strip(), "Aucune description disponible.")
-        print(f"- {symptome}: {description}")
+# Afficher les descritpions des maladies
+def afficher_description(maladie, desc_dict):
+    if maladie in desc_dict:
+        print(f"\nLa description de la maladie {maladie} : {desc_dict[maladie]}")
+    else:
+        print(f"Aucune description disponible pour la maladie {maladie}.")
 
 # Afficher les précautions pour une maladie
 def afficher_precautions(maladie, precaution_dict):
@@ -117,9 +115,6 @@ def main():
             afficher_parler("Merci d'avoir utilisé le chatbot médical. Prenez soin de vous !")
             break
 
-        # On affiche les descriptions des symptômes
-        afficher_description(symptomes, desc_dict)
-
         # On prédit la maladie probable et on affiche les précautions
         # On prédit la maladie probable et on affiche les précautions
         input_data = [1 if col.strip() in symptomes else 0 for col in cols]
@@ -135,6 +130,9 @@ def main():
                 print(f"Probabilité de {maladie} : {prob:.2f} ({proba:.2f}%)")
 
         afficher_parler(f"\nMaladie probable : {maladie_predite}")
+
+        # On affiche la description de la maladie et les précautions
+        afficher_description(maladie_predite, desc_dict)
         afficher_precautions(maladie_predite, precaution_dict)
 
 
