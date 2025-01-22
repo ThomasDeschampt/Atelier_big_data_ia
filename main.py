@@ -5,6 +5,8 @@ import pandas as pd
 import tkinter as tk
 from tkinter import messagebox
 
+from vocal import afficher_parler
+
 # Charger les dictionnaires de descriptions et précautions
 def charger_dictionnaires():
     print("Chargement des descriptions et précautions...")
@@ -31,6 +33,13 @@ def verifier_modele():
     if not os.path.exists(fichier_modele):
         print(f"Le modèle '{fichier_modele}' est introuvable. Entraînement du modèle...")
         subprocess.run(['python', 'apprentissage.py'])
+    else:
+        print(f"Le modèle '{fichier_modele}' est disponible.")
+
+    fichier_modele = 'Models/modele_mll.joblib' 
+    if not os.path.exists(fichier_modele):
+        print(f"Le modèle '{fichier_modele}' est introuvable. Entraînement du modèle...")
+        subprocess.run(['python', 'apprentissage2.py'])
     else:
         print(f"Le modèle '{fichier_modele}' est disponible.")
 
@@ -65,8 +74,11 @@ def main_gui():
     # Charger le modèle et les dictionnaires
     verifier_modele()
     fichier_modele = 'Models/modele_ml.joblib'
+    fichier_modele2 = 'Models/modele_mll.joblib'
     modele = joblib.load(fichier_modele)
+    modele2 = joblib.load(fichier_modele2)
     clf = modele['modele']
+    clf2 = modele2['modele']
     le = modele['encoder']
     cols = modele['colonnes']
     desc_dict, precaution_dict = charger_dictionnaires()
@@ -90,15 +102,39 @@ def main_gui():
         prediction = clf.predict(input_data)
         maladie_predite = le.inverse_transform(prediction)[0]
 
-        result = f"Maladie probable : {maladie_predite}\n\n"
-        result += "Autres maladies possibles avec leurs probabilités :\n"
-        for maladie, prob in zip(le.classes_, probabilities):
-            if prob > 0:  # Seulement les maladies avec une probabilité > 10%
-                result += f"- {maladie} : {prob * 100:.2f}%\n"
+        # Associer chaque maladie à sa probabilité
+        maladies_probables = list(zip(le.classes_, probabilities))
+
+        # Trier les maladies par probabilité décroissante
+        maladies_probables = sorted(maladies_probables, key=lambda x: x[1], reverse=True)
+
+        # Garder seulement les 5 premières maladies
+        top_5_maladies = maladies_probables[:5]
+
+        result = f"Maladie la plus probable : {maladie_predite}\n\n"
+        result += "Top 5 des maladies possibles avec leurs probabilités :\n"
+        for maladie, prob in top_5_maladies:
+            result += f"- {maladie} : {prob * 100:.2f}%\n"
 
         # Ajouter description et précautions
         result += afficher_description(maladie_predite, desc_dict)
         result += afficher_precautions(maladie_predite, precaution_dict)
+
+        # Préparation des données pour clf2
+        cols_clf2 = modele2['colonnes']  # Colonnes attendues par le modèle clf2
+        le2 = modele2['encoder']
+        input_data_clf2 = [1 if col in [maladie_predite.lower()] else 0 for col in cols_clf2]
+        input_data_clf2 = pd.DataFrame([input_data_clf2], columns=cols_clf2)
+
+
+        #Predire le docteur et afficher
+        try:
+            docteur = clf2.predict(input_data_clf2)
+            docteur = le2.inverse_transform(docteur)[0]
+            print(f"Docteur recommandé : {docteur}")
+            result += f"\nDocteur recommandé : {docteur}"
+        except Exception as e:
+            print(f"Erreur lors de la prédiction du docteur : {e}")
 
         # Afficher le résultat dans l'interface
         text_result.delete(1.0, tk.END)
