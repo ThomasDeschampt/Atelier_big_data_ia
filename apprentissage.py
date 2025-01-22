@@ -6,14 +6,13 @@ import joblib
 from sklearn import tree
 import matplotlib.pyplot as plt
 
-#Lecture du fichier csv
+# Lecture du fichier CSV
 def charger_donnees(fichier):
     print(f"Chargement des données depuis {fichier}...")
     data = pd.read_csv(fichier)
     return data
 
-#Préparation des données
-#On identifie la dernière colone comme la colonne cible
+# Préparation des données
 def preparer_donnees(data):
     cols = data.columns[:-1]
     X = data[cols]
@@ -24,28 +23,37 @@ def preparer_donnees(data):
 
     return X, y, cols, le
 
-#Entrainement du modèle
-#On divise les données en données d'entrainement et de test
+# Entraînement du modèle
 def entrainer_modele(X, y):
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33, random_state=42)
 
-    # On utilise un arbre de décision
-    clf = DecisionTreeClassifier(random_state=42)
+    # Limitation de la profondeur de l'arbre
+    clf = DecisionTreeClassifier(random_state=42, max_depth=10)
     clf.fit(X_train, y_train)
 
-    # On évalue le modèle
+    # Évaluation du modèle
     scores = cross_val_score(clf, X_test, y_test, cv=3)
     print(f"Précision moyenne de l'arbre de décision : {scores.mean():.2f}")
 
     return clf
 
-#Sauvegarde du modèle entrainé
+# Sauvegarde du modèle entraîné
 def sauvegarder_modele(clf, le, cols, fichier_modele):
     modele = {'modele': clf, 'encoder': le, 'colonnes': cols}
     joblib.dump(modele, fichier_modele)
     print(f"Modèle sauvegardé dans {fichier_modele}")
 
-#Fonction principale
+# Visualisation de l'arbre
+def visualiser_arbre(clf, cols, le):
+    fig = plt.figure(figsize=(20, 10))
+    _ = tree.plot_tree(clf, 
+                       feature_names=cols,  
+                       class_names=le.classes_,
+                       filled=True)
+    plt.savefig('Models/modele_ml.png')
+    print("Arbre de décision sauvegardé sous forme d'image.")
+
+# Fonction principale
 def main():
     fichier_training = 'Data/Training.csv'
     data = charger_donnees(fichier_training)
@@ -56,15 +64,8 @@ def main():
     fichier_modele = 'Models/modele_ml.joblib'
     sauvegarder_modele(clf, le, cols, fichier_modele)
 
-    #afficher le modele sous forme de graphe
-
-    fig = plt.figure(figsize=(250,200))
-    _ = tree.plot_tree(clf, 
-                   feature_names=cols,  
-                   class_names=le.classes_,
-                   filled=True)
-    plt.savefig('Models/modele_ml.png')
-
+    # Visualisation de l'arbre
+    visualiser_arbre(clf, cols, le)
 
 if __name__ == "__main__":
     main()
