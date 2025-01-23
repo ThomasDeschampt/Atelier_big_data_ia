@@ -25,7 +25,16 @@
                     <h3>Probabilités :</h3>
                     <ul>
                         {% for classe, prob in result.probabilites %}
-                            <li>{{ classe }} : {{ prob|round(2) }}</li>
+                            <li>{{ classe }} : {{ prob|round(2) }}%</li>
+                        {% endfor %}
+                    </ul>
+                    <h3>Description de la maladie :</h3>
+                    <p>{{ result.description }}</p>
+
+                    <h3>Précautions à prendre :</h3>
+                    <ul>
+                        {% for precaution in result.precautions %}
+                            <li>{{ precaution }}</li>
                         {% endfor %}
                     </ul>
                 {% endif %}
