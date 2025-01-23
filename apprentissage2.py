@@ -12,9 +12,9 @@ def charger_donnees(fichier):
 
 # Préparation des données
 def preparer_donnees(data):
-    cols = data.columns[:-1]
+    cols = data.columns[:-2]
     X = data[cols]
-    y = data['doctor']
+    y = data['doctor'] + data['adresse']
 
     le = preprocessing.LabelEncoder()
     y = le.fit_transform(y)
