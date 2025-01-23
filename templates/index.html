@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot Médical</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Chatbot Médical</h1>
+        <form method="POST">
+            <label for="symptomes">Symptômes (séparés par des virgules) :</label>
+            <input type="text" id="symptomes" name="symptomes" required>
+            <button type="submit">Soumettre</button>
+        </form>
+
+        {% if result %}
+            <div class="result">
+                {% if result.error %}
+                    <p class="error">{{ result.error }}</p>
+                {% else %}
+                    <h2>Maladie prédite : {{ result.maladie }}</h2>
+                    <p>Docteur recommandé : {{ result.docteur }}</p>
+                    <h3>Probabilités :</h3>
+                    <ul>
+                        {% for classe, prob in result.probabilites %}
+                            <li>{{ classe }} : {{ prob|round(2) }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>
