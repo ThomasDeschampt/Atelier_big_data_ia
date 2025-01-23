@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, flash
 import joblib
 import pandas as pd
 import os
+from main import verifier_modele
 from vocal import lancer_parler_en_thread
 
 app = Flask(__name__)
@@ -9,6 +10,7 @@ app.secret_key = 'votre_cle_secrète'  # Nécessaire pour les messages flash
 
 # Charger le modèle et les dictionnaires
 def charger_modeles():
+    verifier_modele()
     modele_path = "Models/modele_ml.joblib"
     modele2_path = "Models/modele_mll.joblib"
 
@@ -97,7 +99,15 @@ def index():
             result["description"] = afficher_description(maladie_predite)
             result["precautions"] = afficher_precautions(maladie_predite)
             
-            lancer_parler_en_thread(result)
+            result_parler = {
+                "maladie": maladie_predite,
+                "docteur": docteur
+            }
+            # Ajouter la description et les précautions
+            result_parler["description"] = afficher_description(maladie_predite)
+            result_parler["precautions"] = afficher_precautions(maladie_predite)
+            
+            lancer_parler_en_thread(result_parler)
         except Exception as e:
             flash(f"Erreur lors de la prédiction : {e}", "error")
             result = {"error": f"Erreur : {e}"}
